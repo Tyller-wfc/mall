@@ -2,14 +2,13 @@ import axios from 'axios'
 
 export function request(config) {
     const instance = axios.create({
-        baseURL:'http://localhost:8888',
-        timeout:500
+        baseURL:'http://106.54.54.237:8000',
+        timeout:10000
     })
 
-    instance.interceptors.request.use(config =>{
-        console.log('拦截请求');
+    /*instance.interceptors.request.use(config =>{
         return config;
-    })
+    })*/
 
     return instance(config)
 }
