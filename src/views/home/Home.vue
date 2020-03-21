@@ -28,6 +28,7 @@
 
 
   import {getHomeMultiData, getHomeGoods} from 'network/home';
+  import {debounce} from "common/util";
 
   export default {
     name: "Home",
@@ -63,6 +64,12 @@
       this.getHomeGoods('new');
       this.getHomeGoods('sell');
     },
+    mounted() {
+      const refresh = debounce(this.$refs.scroll.refresh, 50);
+      this.$bus.$on('itemImageLoad', ()=>{
+        refresh()
+      })
+    },
     computed: {
       currentGoods() {
         return this.goods[this.currentType].list;
@@ -84,14 +91,14 @@
         }
       },
 
-      backTop(){
+      backTop() {
         this.$refs.scroll.backTop(0, 0);
       },
 
-      scroll(position){
-        this.isShowBackTop = -position.y >1000
+      scroll(position) {
+        this.isShowBackTop = -position.y > 1000
       },
-      loadMore(){
+      loadMore() {
         this.getHomeGoods(this.currentType)
       },
       getHomeMultiData() {
@@ -104,11 +111,10 @@
       },
       getHomeGoods(type) {
         let page = this.goods[type].page + 1;
-        console.log(page);
         getHomeGoods(type, page).then(res => {
-          console.log(res);
           this.goods[type].list.push(...res.data.data.list);
-          this.goods[type].page += 1
+          this.goods[type].page += 1;
+          this.$refs.scroll.finishPullUp();
         })
       }
     }
@@ -116,10 +122,11 @@
 </script>
 
 <style scoped>
-  #home{
+  #home {
     height: 100vh;
     position: relative;
   }
+
   .home-nav {
     background-color: var(--color-tint);
     color: #fff;
@@ -137,7 +144,7 @@
     z-index: 9;
   }
 
-  .content{
+  .content {
     overflow: hidden;
 
     position: absolute;
