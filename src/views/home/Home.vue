@@ -3,7 +3,7 @@
     <nav-bar class="home-nav">
       <div slot="center">购物街</div>
     </nav-bar>
-    <scroll class="content" ref="scroll" :probe-type="3" @scroll="scroll">
+    <scroll class="content" ref="scroll" :probe-type="3" @scroll="scroll" @pullingUp="loadMore">
       <home-swiper :banners="banners"></home-swiper>
       <recommend-view :recommends="recommends"></recommend-view>
       <feature-view></feature-view>
@@ -70,6 +70,7 @@
     },
     methods: {
       tabClick(index) {
+        console.info(index);
         switch (index) {
           case 0:
             this.currentType = 'pop';
@@ -89,6 +90,9 @@
 
       scroll(position){
         this.isShowBackTop = -position.y >1000
+      },
+      loadMore(){
+        this.getHomeGoods(this.currentType)
       },
       getHomeMultiData() {
         getHomeMultiData().then(res => {

@@ -19,21 +19,23 @@
         scroll: null
       }
     },
-    props() {
-      return {
-        probeType: {
-          type: Number,
-          default: 0
-        }
+    props: {
+      probeType: {
+        type: Number,
+        default: 0
       }
     },
     mounted() {
       this.scroll = new BetterScroll(this.$refs.wrapper, {
         probeType: this.probeType,
-        pullUpLoad: true
+        pullUpLoad: true,
+        click: true
       })
       this.scroll.on('scroll', position => {
-        this.$emit("scroll",position)
+        this.$emit("scroll", position)
+      });
+      this.scroll.on('pullingUp', () => {
+        this.$emit('pullingUp')
       })
     },
     methods: {
