@@ -3,12 +3,16 @@
     <nav-bar class="home-nav">
       <div slot="center">购物街</div>
     </nav-bar>
+
+    <tab-control :titles="['流行','新款','精选']" class="tab-control"
+                 @tabClick="tabClick" v-show="isTabControlFixed" ref="tabControl_2"></tab-control>
+
     <scroll class="content" ref="scroll" :probe-type="3" @scroll="scroll" @pullingUp="loadMore">
-      <home-swiper :banners="banners"></home-swiper>
+      <home-swiper :banners="banners" @swiperImageLoad="swiperImageLoad"></home-swiper>
       <recommend-view :recommends="recommends"></recommend-view>
       <feature-view></feature-view>
-      <tab-control :titles="['流行','新款','精选']" class="tab-control"
-                   @tabClick="tabClick"></tab-control>
+      <tab-control :titles="['流行','新款','精选']"
+                   @tabClick="tabClick" ref="tabControl_1"></tab-control>
       <goods-list :goods="currentGoods"></goods-list>
     </scroll>
     <back-top @click.native="backTop" v-show="isShowBackTop"></back-top>
@@ -54,7 +58,9 @@
           'sell': {page: 0, list: []}
         },
         currentType: 'pop',
-        isShowBackTop: false
+        isShowBackTop: false,
+        isTabControlFixed: false,
+        tabOffsetTop:0
       }
     },
     created() {
@@ -66,9 +72,9 @@
     },
     mounted() {
       const refresh = debounce(this.$refs.scroll.refresh, 50);
-      this.$bus.$on('itemImageLoad', ()=>{
+      this.$bus.$on('itemImageLoad', () => {
         refresh()
-      })
+      });
     },
     computed: {
       currentGoods() {
@@ -77,7 +83,6 @@
     },
     methods: {
       tabClick(index) {
-        console.info(index);
         switch (index) {
           case 0:
             this.currentType = 'pop';
@@ -89,14 +94,19 @@
             this.currentType = 'sell';
             break;
         }
+        this.$refs.tabControl_1.currentIndex = index;
+        this.$refs.tabControl_2.currentIndex = index;
       },
-
+      swiperImageLoad() {
+        this.tabOffsetTop = this.$refs.tabControl_1.$el.offsetTop;
+      },
       backTop() {
         this.$refs.scroll.backTop(0, 0);
       },
 
       scroll(position) {
-        this.isShowBackTop = -position.y > 1000
+        this.isShowBackTop = -position.y > 1000;
+        this.isTabControlFixed = -position.y > this.tabOffsetTop;
       },
       loadMore() {
         this.getHomeGoods(this.currentType)
@@ -130,17 +140,10 @@
   .home-nav {
     background-color: var(--color-tint);
     color: #fff;
-
-    position: fixed;
-    left: 0;
-    right: 0;
-    top: 0;
-    z-index: 9;
   }
 
   .tab-control {
-    position: sticky;
-    top: 44px;
+    position: relative;
     z-index: 9;
   }
 
