@@ -47,6 +47,9 @@
       },
       finishPullUp(){
         this.scroll.finishPullUp();
+      },
+      getY(){
+        return this.scroll.y;
       }
     }
   }

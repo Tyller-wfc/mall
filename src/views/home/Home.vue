@@ -60,7 +60,8 @@
         currentType: 'pop',
         isShowBackTop: false,
         isTabControlFixed: false,
-        tabOffsetTop:0
+        tabOffsetTop:0,
+        positionY:0
       }
     },
     created() {
@@ -80,6 +81,13 @@
       currentGoods() {
         return this.goods[this.currentType].list;
       }
+    },
+    activated(){
+      this.$refs.scroll.scroll.scrollTo(0, this.positionY, 0);
+      this.$refs.scroll.scroll.refresh();
+    },
+    deactivated(){
+      this.positionY = this.$refs.scroll.getY();
     },
     methods: {
       tabClick(index) {
